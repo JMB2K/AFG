@@ -6,14 +6,7 @@ from datetime import datetime
 
 # You must run the app on your phone and catch the packet, convert it at "https://curlconverter.com/#" and replace this info with it, then comment out date and time
 headers = {
-    'x-amz-access-token': 'Atna|EwICIKAeq4NCqRHm5ZqBStzc9EqaJxQiRczG-WuH-ETZkfCBAtGWTv4FuQb2jnwq8owJNpQ7_Dqy-OBuV4KzLhpotTNID_uhz9xRXWUxibft9Bmx_x9s1rugo5nYOV7jcOjVfMRY7ROMvT4sMGFuPouo6NJJPYlyeAnFRVBS3xR8UG6mKGSZYTt5j-DT2g3EktDPXFPWsbJFg-GYdBCIYQmf8WVZlOYJN-DXCSW2zE8ZthDufXw2mZZoEa8mpglfaupeorpNU2McuFUusQpGH6oBLQdyI0ZygIG-51_QNc_AXj-qs3jYN4LgUWHr7OsqvfExpgvaauBoWelnmDtItsJ6JDRV',
-    'X-Amzn-RequestId': '51c88df6-e194-4a9f-9b97-e87d41786c0d',
-    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; Pixel 6 Build/S2B3.220205.007.A1) RabbitAndroid/3.70.2.4.0',
-    'X-Flex-Client-Time': '1645846779444',
-    'x-flex-instance-id': '0604c7e6-8177-4b8d-8b64-cf0c5cff6023',
-    'Authorization': 'RABBIT3-HMAC-SHA256 SignedHeaders=host;x-amz-access-token;x-amz-date;x-amzn-requestid,Signature=9193aa7f59c4241acfcabe0b100390b1ab6744804ee9939e325649ad90f12411',
-    'Host': 'flex-capacity-na.amazon.com',
-    'X-Amz-Date': '20220225T213939Z',
+
 }
 
 
