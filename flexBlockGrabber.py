@@ -71,6 +71,7 @@ def blockSearch(headers=headers):
             blockPay = priceAmount
             startTime = datetime.fromtimestamp(i["startTime"])
             blockDuration = blockLength
+            print(blockLength, highPay)
 
     if highPay > 105:
         acceptOffer(offerID, accessToken)
@@ -103,5 +104,10 @@ def acceptOffer(offerID, accessToken, headers=headers):
 
 
 while keepTrying:
-    blockSearch()
-    # time.sleep(1)
+    try:
+        blockSearch()
+    except:
+        print('Maximum Refreshes Reached')
+        toExit = input('Press Enter To Exit')
+        keepTrying = False
+
