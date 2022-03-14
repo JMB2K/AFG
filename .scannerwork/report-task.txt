@@ -1,0 +1,6 @@
+projectKey=flex_grabber
+serverUrl=http://localhost:9000
+serverVersion=9.3.0.51899
+dashboardUrl=http://localhost:9000/dashboard?id=flex_grabber
+ceTaskId=AX9O26e4T4uxmLfzV-Im
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AX9O26e4T4uxmLfzV-Im
