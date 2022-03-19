@@ -6,14 +6,14 @@ from appJar import gui
 
 # You must run the app on your phone and catch the packet, convert it at "https://curlconverter.com/#" and replace this info with it, then comment out date and time
 headers = {
-    'x-amz-access-token': 'Atna|EwICIB8ipfqXlfUc8PKWXJFO5T0fZdVgzCvK60hwNsC1UrJ839Z_5vgNRhQeuRZsB6okaWfNb2xRyi8eYBONn1GrEEVT2QiqxF42nKUSS2ktxmvtICQiaN-LRBlk4OH4VTOlkVucRCmg1yQgBti6NOyvgKMfUBRntYiIwvFF8-_8rXmULuB06X9Lvu0jnKBteBSmqV60k7LbuMqVguBdw-E7AFi4GFNIbswI99d3pOZb8C5Xr4mPJ-ZkQzeVC-zZT4GiqlvoCnl0PfanD0jUfuBsYhz-gaG1V61pW8JzWxI9XtnfiZLSWzOHfE-Ncvnd1uWBEPlNpBcSRyQwwrFlfj8UQC4H',
-    'X-Amzn-RequestId': '7a261edd-86e8-4cdd-95b5-24f902e9284a',
-    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; Pixel 6 Build/S3B1.220218.004) RabbitAndroid/3.71.1.48.0',
-    'X-Flex-Client-Time': '1647659957500',
-    'x-flex-instance-id': '0604c7e6-8177-4b8d-8b64-cf0c5cff6023',
-    'Authorization': 'RABBIT3-HMAC-SHA256 SignedHeaders=host;x-amz-access-token;x-amz-date;x-amzn-requestid,Signature=cfbdfe7b6e0b2a29459bbf47926cb491a6d2164993b9e636d19f85b3fea3a349',
-    'Host': 'flex-capacity-na.amazon.com',
-    'X-Amz-Date': '20220318T221916Z',
+    "x-amz-access-token": "Atna|EwICIBLjXa8L0GAKE5PUu8SkQeXFn5wAcm8Pqk-mljocwgnQI8FQp9KKOw8sOJ5PnpJxVPPyaWbchx9bLmP2mNGdNf5Ck9r8Q5-6KwRGgfgVfjdACW3d-2IIPd1XmPzOdZQt2FrPSRcgZ9yADPTBhqc65wTywJ8wGBM1LAEX1Ja4LNrLhV7tejDd33uOvUXSkGq23Scqi__fwB9XuWh2qZ6Rpc1HMJK_Ztwm-3d3kUGask2RZkcZbNb5FsrcXzSQ5jG1RM7OegAG-qqf0Wl5PtFZdhoD0dAIkZpfYi4oB06XHdFvKHTv30CchdC_h1aXKeL0OYUOl2fQquTs8D6HyvBcMmAY",
+    "X-Amzn-RequestId": "a7935535-2956-47c3-86a2-c007c33172ad",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 12; Pixel 6 Build/S3B1.220218.004) RabbitAndroid/3.71.1.48.0",
+    "X-Flex-Client-Time": "1647669463715",
+    "x-flex-instance-id": "0604c7e6-8177-4b8d-8b64-cf0c5cff6023",
+    "Authorization": "RABBIT3-HMAC-SHA256 SignedHeaders=host;x-amz-access-token;x-amz-date;x-amzn-requestid,Signature=27872da089f27a3bce91355007337069eac7e0de095a106810f80140109722bb",
+    "Host": "flex-capacity-na.amazon.com",
+    "X-Amz-Date": "20220319T005742Z",
 }
 
 del headers["X-Flex-Client-Time"]
@@ -68,7 +68,11 @@ def flex_grabber(headers=headers):
         block_length = (i["endTime"] - i["startTime"]) / 3600
         price_amount = i["rateInfo"]["priceAmount"]
         # Making sure not to accept anything that starts less than 25 minutes from current time or anything under $30/hr
-        if i["startTime"] - int(time.time()) < 1500 or price_amount / block_length < 35 or price_amount < highPay or block_length > 4:
+        if (
+            i["startTime"] - int(time.time()) < 1500
+            or price_amount / block_length < 33
+            or price_amount < highPay
+        ):
             continue
 
         highPay = price_amount
@@ -92,7 +96,7 @@ def flex_grabber(headers=headers):
 
         # Checking response to confirm offer was accepted in time or if someone else got it, it includes a message if you missed it and is null if you got it
         try:
-            json.loads(accept.text)["message"]
+            print(json.loads(accept.text)["message"])
             highPay = 0
         except Exception:
             # Throw up a pop-up if you get a block, showing the date, time, and pay
@@ -100,19 +104,19 @@ def flex_grabber(headers=headers):
             return app.infoBox("Got One", f"{startTime}\n{blockDuration}\n${blockPay}")
 
 
-if __name__ == '__main__':
-    rounds = 1
+if __name__ == "__main__":
+    #rounds = 1
     stalls = 0
     while keepTrying:
         try:
             flex_grabber()
-            print(rounds)
-            rounds += 1
-            time.sleep(.75)
+            #print(rounds)
+            #rounds += 1
+            time.sleep(0.75)
             stalls = 0
         except Exception as E:
             stalls += 1
             if stalls == 2:
                 break
-            print('RESTING')
+            print("RESTING")
             time.sleep(90)
