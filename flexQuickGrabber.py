@@ -6,14 +6,14 @@ from appJar import gui
 
 # You must run the app on your phone and catch the packet, convert it at "https://curlconverter.com/#" and replace this info with it, then comment out date and time
 headers = {
-    'x-amz-access-token': 'Atna|EwICIHpihucqqqsIo1m1FYMjKgbJDeA7tTiZrD1ZBdd7uqx5UWK-ggfAg189egcRizdT6Ycfq6VhvU23K4Eow_vN1jC8v_mVZNJmodnFhGw5Sj0LWVfXUHWlYBZuvXIej3uvVLNqfgQ7-jPlnB145yXZU00aznVpubzIShqnSfF0iccrk9ty_vNOk-Ks9kK9xoSXMY9gkYC9w2NcPVmCq0tjFWZPbxG2jZ6FiIpT8YrL_92z7BXrE3u-fShnOvTJuizegkeloAhms5dsHBHZymC6rieCDUNXTnDCSyKf1HmYEd5G2LOBGg2tDZWpVhrwYT5TKkrlRxj0O7w9vRW7gQzKlql_',
-    'X-Amzn-RequestId': 'dd642b6c-ad21-4b27-86b1-a18b35a5c114',
-    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; Pixel 6 Build/S3B1.220218.004) RabbitAndroid/3.70.2.4.0',
-    'X-Flex-Client-Time': '1647122828703',
+    'x-amz-access-token': 'Atna|EwICIMk-QAxUAGRRg_D75sr67JCV672l6r3HQ1LWbqES_KWObx0-k4CleFKUpcAaV_xPPnExTHkiPbHJgkN98RjE7mdxEGoZ7DaM9tzPfDUObZqpKBaQ6Vft3A_9TuggTCIG97OVE3S_Q4Vfw8bGSxxE8v_n7KNjClyLjCMecYwbXYcrg8fFye7WXcYKNNjZEuHn2n65JGfleB3NB-X3xfoP5HvHJb83mUP1-RjUG0bl0wTcIZbri34kCqpJzQBNpy5K095cwP4u7Hhifz5b-X-_UTdJ-OGurl0TfjJw9i5wn2690MC5AcoQp9l4kh4jdLYDk9nj9LEN_fRCsho5Gu7Uzb-9',
+    'X-Amzn-RequestId': '2a783516-5107-4fd5-abc6-4df616e0b7d4',
+    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; Pixel 6 Build/S3B1.220218.004) RabbitAndroid/3.71.1.48.0',
+    'X-Flex-Client-Time': '1647656899821',
     'x-flex-instance-id': '0604c7e6-8177-4b8d-8b64-cf0c5cff6023',
-    'Authorization': 'RABBIT3-HMAC-SHA256 SignedHeaders=host;x-amz-access-token;x-amz-date;x-amzn-requestid,Signature=25aac0b3c9914682a7e6e3613c4dfe7e663e6375fa4b083d753642845e204e52',
+    'Authorization': 'RABBIT3-HMAC-SHA256 SignedHeaders=host;x-amz-access-token;x-amz-date;x-amzn-requestid,Signature=c38dd16dc54d68f2b8235295387780007db5376251a9870ae4ee40a4d7bfbbbe',
     'Host': 'flex-capacity-na.amazon.com',
-    'X-Amz-Date': '20220312T160709Z',
+    'X-Amz-Date': '20220318T212819Z',
 }
 
 del headers["X-Flex-Client-Time"]
@@ -63,38 +63,37 @@ def flex_grabber(headers=headers):
     except KeyError:
         raise KeyError(j)
 
-    for i in offer_list:
+    for i in [block for block in offer_list if not block["hidden"]]:
         block_length = (i["endTime"] - i["startTime"]) / 3600
         price_amount = i["rateInfo"]["priceAmount"]
         # Making sure not to accept anything that starts less than 25 minutes from current time or anything under $30/hr
-        if i["startTime"] - int(time.time()) < 1500 or price_amount / block_length < 25:
+        if i["startTime"] - int(time.time()) < 1500 or price_amount / block_length < 35 or block_length > 4:
             continue
-        # Filtering out blocks over 4 hours and making sure it's the highest paying offer
-        if block_length <= 4 and not i["hidden"]:
-            offerID = i["offerId"]
-            blockPay = price_amount
-            startTime = datetime.fromtimestamp(i["startTime"])
-            blockDuration = block_length
-            print(block_length, blockPay)
 
-            # Sending acceptance of offer
-            accept_json_data = {
-                "__type": "AcceptOfferInput:http://internal.amazon.com/coral/com.amazon.omwbuseyservice.offers/",
-                "offerId": offerID,
-            }
-            accept = requests.post(
-                "https://flex-capacity-na.amazon.com/AcceptOffer",
-                headers=headers,
-                json=accept_json_data,
-            )
+        offerID = i["offerId"]
+        blockPay = price_amount
+        startTime = datetime.fromtimestamp(i["startTime"])
+        blockDuration = block_length
+        print(block_length, blockPay)
 
-            # Checking response to confirm offer was accepted in time or if someone else got it, it includes a message if you missed it and is null if you got it
-            try:
-                json.loads(accept.text)["message"]
-            except Exception:
-                # Throw up a pop-up if you get a block, showing the date, time, and pay
-                keepTrying = False
-                return app.infoBox("Got One", f"{startTime}\n{blockDuration}\n${blockPay}")
+        # Sending acceptance of offer
+        accept_json_data = {
+            "__type": "AcceptOfferInput:http://internal.amazon.com/coral/com.amazon.omwbuseyservice.offers/",
+            "offerId": offerID,
+        }
+        accept = requests.post(
+            "https://flex-capacity-na.amazon.com/AcceptOffer",
+            headers=headers,
+            json=accept_json_data,
+        )
+
+        # Checking response to confirm offer was accepted in time or if someone else got it, it includes a message if you missed it and is null if you got it
+        try:
+            json.loads(accept.text)["message"]
+        except Exception:
+            # Throw up a pop-up if you get a block, showing the date, time, and pay
+            keepTrying = False
+            return app.infoBox("Got One", f"{startTime}\n{blockDuration}\n${blockPay}")
 
 
 if __name__ == '__main__':
@@ -105,7 +104,7 @@ if __name__ == '__main__':
             flex_grabber()
             print(rounds)
             rounds += 1
-            time.sleep(.75)
+            time.sleep(.5)
             stalls = 0
         except Exception as E:
             stalls += 1
