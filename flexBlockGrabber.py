@@ -108,7 +108,7 @@ def flex_grabber(headers=headers):
 
 
 if __name__ == "__main__":
-    breaks = [.25, .33, .5, .67, .75, 1]
+    #breaks = [.25, .33, .5, .67, .75, 1]
     #rounds = 1
     stalls = 0
     while keepTrying:
